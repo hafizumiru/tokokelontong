@@ -1,7 +1,12 @@
 import time
 import os
 
+from toko import Toko
+from data_base import item_toko
+
+toko = Toko
 def main():
+    
     while True:
         print("\nSelamat datang di L39's Store\n")
         print("Ada yang bisa kami bantu:")
@@ -14,7 +19,7 @@ def main():
         if pilihan == '1':
             print("Anda memilih Opsi 1.")
         elif pilihan == '2':
-            print("Anda memilih Opsi 2.")
+            toko.show_item(item_toko)
         elif pilihan == '0':
             print("Terima kasih atas kunjungannya! Kami tunggu kedatangan Anda kembali.")
             break
@@ -22,6 +27,7 @@ def main():
             print("Pilihan tidak valid, silakan coba lagi.")
 
         time.sleep(3)
-        os.system('cls')
+        # os.system('cls')
+
 
 main()
