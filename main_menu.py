@@ -2,9 +2,10 @@ import time
 import os
 
 from toko import Toko
+from karyawan import Karyawan
 
 toko = Toko
-
+karyawan = Karyawan
 
 def main():
 
@@ -18,7 +19,7 @@ def main():
         pilihan = input("\nMasukkan pilihan Anda: ")
 
         if pilihan == '1':
-            print("Anda memilih Opsi 1.")
+            karyawan.menu_karyawan()
         elif pilihan == '2':
             toko.menu_toko()
         elif pilihan == '0':
