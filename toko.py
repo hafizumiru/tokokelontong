@@ -75,7 +75,7 @@ class Toko:
             else:
                 print("Pilihan tidak valid, silakan coba lagi.")
 
-            time.sleep(5)
+            time.sleep(2)
 
 # MENU 1
 
@@ -188,9 +188,9 @@ def lakukan_pembayaran():
                     member_data = members[member_id]
 
                     total_harga *= 0.95
-                    harga_akhir(int(total_harga))
                     print(
                         f"Selamat, {member_data['name']}! Anda mendapatkan diskon tambahan, Anda hanya perlu membayar sebesar {int(total_harga)}")
+                    harga_akhir(int(total_harga))
                     loop_member = False
                 else:
                     print("ID Member tidak valid. Kembali Ke pilihan sebelumnya.")
@@ -240,6 +240,7 @@ def harga_akhir(total_harga):
 
                 # Kosongkan keranjang belanja dan kembali ke menu utama
                 keranjang_belanja.clear()
+                time.sleep(20)
                 loop_harga = False
             else:
                 kekurangan = total_harga - total_uang
