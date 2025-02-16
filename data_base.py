@@ -140,3 +140,11 @@ item_toko = {
         "promo": 0
     }
 }
+
+members = {
+    1001: {'name': 'John Doe'},
+    1002: {'name': 'Jane Smith'},
+    1003: {'name': 'Alice Brown'}
+}
+
+nota_transaksi = {}
