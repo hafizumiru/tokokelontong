@@ -311,6 +311,7 @@ def hapus_member(members):
 
 
 def restore_member(members):
+    os.system('cls')
     print('Daftar Member yang Dihapus:')
 
     daftar_member_terhapus = []
