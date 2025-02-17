@@ -166,11 +166,12 @@ karyawan = [
 ]
 
 members = {
-    1001: {'name': 'Mirul Hafiz'}
+    1001: {'name': 'Mirul Hafiz', 'is_deleted': 0}
 }
 
 nota_transaksi = {
-    # Contoh isi
+
+    # # Contoh isi
     # "2025-02-17 10:00:00": {
     #     "total_harga": 30000,
     #     "item_dibeli": {

@@ -135,6 +135,7 @@ def tambah_item(item_toko):
 
 
 def hapus_item(item_toko):
+    os.system('cls')
     print('Daftar Barang di Toko:')
     toko = []
     for index, (item_id, item_detail) in enumerate(item_toko.items()):
@@ -147,7 +148,7 @@ def hapus_item(item_toko):
     if id_hapus in item_toko:
         item_toko[id_hapus]['is_deleted'] = 1
         print(f"Item {id_hapus} berhasil dihapus")
-        time.sleep(5)
+        time.sleep(3)
     else:
         print(f"Item {item_id} tidak ditemukan.")
 
@@ -168,6 +169,7 @@ def tambah_stok(item_toko):
         stok_baru = int(input("Masukkan jumlah stok yang ingin ditambahkan: "))
         item_toko[kode_item]['stock'] += stok_baru
         print(f"Stok item {item_toko[kode_item]['name']} berhasil diperbarui.")
+        time.sleep(3)
     else:
         print(f"Item dengan kode {kode_item} tidak ditemukan.")
     return item_toko
@@ -227,43 +229,116 @@ def restore_item(item_toko):
 
 
 def lihat_member(members):
-    # while True:
-    #     os.system('cls')
-    #     print('Daftar Barang di Toko:')
-    #     toko = []
-    #     for index, (item_id, item_detail) in enumerate(item_toko.items()):
-    #         toko.append([index + 1, item_id, item_detail['name'],
-    #                     item_detail['category'], item_detail['price'], item_detail['stock']])
-    #     print(tabulate(toko, headers=[
-    #           'No', 'Kode Item', 'Nama', 'Kategori', 'Harga', 'Stok'], tablefmt='grid'))
+    while True:
+        os.system('cls')
+        print('Daftar Member:')
+        member_list = []
+        for index, (member_id, member_detail) in enumerate(members.items()):
+            if not member_detail['is_deleted']:
+                member_list.append([member_id, member_detail['name']])
+        print(tabulate(member_list, headers=[
+            'ID', 'Nama'], tablefmt='grid'))
 
-    #     print(f"\nPilih Menu")
-    #     print("1. Tambah Item Toko")
-    #     print("2. Hapus Item Toko")
-    #     print("3. Tambah Stock Item")
-    #     print("4. Edit Promo")
-    #     print("5. Restore Item yang Terhapus")
-    #     print("0. Back")
+        print(f"\nPilih Menu")
+        print("1. Tambah Member Baru")
+        print("2. Hapus Member")
+        print("3. Restore Data Member")
+        print("0. Back")
 
-    #     pilihan = input("\nMasukkan pilihan Anda: ")
+        pilihan = input("\nMasukkan pilihan Anda: ")
 
-    #     if pilihan == '1':
-    #         print("1")
-    #     elif pilihan == '2':
-    #         print("2")
-    #     elif pilihan == '3':
-    #         print("3")
-    #     elif pilihan == '4':
-    #         print("3")
-    #     elif pilihan == '5':
-    #         print("3")
-    #     elif pilihan == '0':
-    #         return False
-    #     else:
-    #         print("Pilihan tidak valid, silakan coba lagi.")
-    pass
+        if pilihan == '1':
+            tambah_member(members)
+        elif pilihan == '2':
+            hapus_member(members)
+        elif pilihan == '3':
+            restore_member(members)
+        elif pilihan == '0':
+            return False
+        else:
+            print("Pilihan tidak valid, silakan coba lagi.")
 
-# Fungsi Recap Penjualan
+
+def tambah_member(members):
+    os.system('cls')
+    print("Tambah Member")
+
+    if len(members) == 0:
+        kode_member_baru = 1001
+    else:
+
+        kode_member_terakhir = sorted(members.keys())[-1]
+        kode_member_baru = kode_member_terakhir + 1
+
+    nama = input("Masukkan Nama Member: ")
+
+    members[kode_member_baru] = {
+        "name": nama,
+        "is_deleted": 0
+    }
+
+    print(f"Member {nama} berhasil ditambahkan dengan kode {kode_member_baru}.")
+    time.sleep(3)
+    return members
+
+
+def hapus_member(members):
+    os.system('cls')
+    print('Daftar Member:')
+
+    daftar_member = []
+    for member_id, member_detail in members.items():
+        if not member_detail['is_deleted']:
+            daftar_member.append([member_id, member_detail['name']])
+
+    if len(daftar_member) == 0:
+        print("Tidak ada member yang tersedia.")
+        return members
+
+    print(tabulate(daftar_member, headers=[
+          'ID Member', 'Nama'], tablefmt='grid'))
+
+    id_hapus = int(input("Masukan ID member yang akan dihapus: "))
+
+    if id_hapus in members:
+        members[id_hapus]['is_deleted'] = 1
+        print(f"Member {id_hapus} berhasil dihapus.")
+        time.sleep(3)
+    else:
+        print(f"Member dengan ID {id_hapus} tidak ditemukan.")
+
+    return members
+
+
+def restore_member(members):
+    print('Daftar Member yang Dihapus:')
+
+    daftar_member_terhapus = []
+    for member_id, member_detail in members.items():
+        if member_detail['is_deleted']:
+            daftar_member_terhapus.append([member_id, member_detail['name']])
+
+    if len(daftar_member_terhapus) == 0:
+        print("Tidak ada member yang dapat direstore.")
+        return members
+
+    print(tabulate(daftar_member_terhapus, headers=[
+          'ID Member', 'Nama'], tablefmt='grid'))
+
+    id_restore = int(input("Masukan ID member yang akan direstore: "))
+
+    if id_restore in members and members[id_restore]['is_deleted'] == 1:
+
+        members[id_restore]['is_deleted'] = 0
+        print(f"Member {id_restore} berhasil direstore.")
+        time.sleep(3)
+    else:
+        print(
+            f"Member dengan ID {id_restore} tidak ditemukan atau tidak dihapus.")
+
+    return members
+
+    # Fungsi Recap Penjualan
 
 
 def recap_penjualan(nota_transaksi):
