@@ -27,15 +27,14 @@ class Toko:
             print("\nAda yang bisa kami bantu:")
             print("1. Lihat Item Promo")
             print("2. Pilih Barang")
-            print("3. Cari Barang")
-            print("4. Lihat Keranjang")
-            print("5. Lakukan Pembayaran")
+            print("3. Lihat Keranjang")
+            print("4. Lakukan Pembayaran")
             print("0. Kembali")
 
             pilihan = input("\nMasukkan pilihan Anda: ")
 
             if pilihan == '1':
-                lihat_item_promo(dict)
+                lihat_item_promo(item_toko)
             elif pilihan == '2':
                 belanja = True
                 while belanja:
@@ -53,8 +52,6 @@ class Toko:
                     #         "Angka yang ada masukan tidak valid. Tolong masukan hanya angka")
 
             elif pilihan == '3':
-                print("Anda memilih Opsi 3.")
-            elif pilihan == '4':
                 keranjang = True
                 while keranjang:
                     try:
@@ -68,7 +65,7 @@ class Toko:
                     except:
                         print(
                             "Angka yang ada masukan tidak valid. Tolong masukan hanya angka")
-            elif pilihan == '5':
+            elif pilihan == '4':
                 lakukan_pembayaran()
             elif pilihan == '0':
                 return False
@@ -80,10 +77,12 @@ class Toko:
 # MENU 1
 
 
-def lihat_item_promo(dict):
+def lihat_item_promo(item_toko):
     promo_items = []
-    for index, item_detail in enumerate(dict.items()):
-        if item_detail.get('promo') == 1:
+    # Memisahkan key dan value dari tuple
+    for index, (item_id, item_detail) in enumerate(item_toko.items()):
+        # Akses item_detail karena sudah dipisahkan
+        if item_detail.get('is_promo') == 1:
             promo_items.append([index + 1, item_detail['name'],
                                 item_detail['category'], item_detail['price'], math.ceil(item_detail['price'] * 0.9), item_detail['stock']])
     if promo_items:
@@ -102,7 +101,7 @@ def lihat_item_promo(dict):
                     masukan_keranjang(index, jumlah)
             except:
                 print(
-                    "Angka yang ada masukan tidak valid. Tolong masukan hanya angka")
+                    "Angka yang Anda masukkan tidak valid. Tolong masukkan hanya angka")
     else:
         print("Tidak ada item dengan promo.")
 
@@ -112,7 +111,7 @@ def lihat_item_promo(dict):
 def masukan_keranjang(index, jumlah):
     item_list = list(item_toko.items())
 
-    if index < 0 or index >= len(item_list):
+    if index < 0 or index-1 >= len(item_list):
         print(f"Index {index} tidak valid.")
     else:
         item_id, item = item_list[index-1]
@@ -138,7 +137,7 @@ def masukan_keranjang(index, jumlah):
                 f"{jumlah} {item['name']} berhasil ditambahkan ke keranjang dengan harga {'promo' if item.get('promo') == 1 else 'normal'}: {harga}.")
 
 
-# MENU 4
+# MENU 3
 
 
 def lihat_keranjang():
@@ -153,7 +152,7 @@ def lihat_keranjang():
               'No', 'Nama Item', 'Harga per Unit', 'Jumlah', 'Total Harga'], tablefmt='grid'))
 
 
-# MENU 5
+# MENU 4
 
 
 def lakukan_pembayaran():
