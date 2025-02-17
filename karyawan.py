@@ -52,6 +52,8 @@ def masuk_menu(username):
         else:
             print("Pilihan tidak valid, silakan coba lagi.")
 
+# Fungsi Daftar Item
+
 
 def lihat_item(item_toko):
     while True:
@@ -82,9 +84,9 @@ def lihat_item(item_toko):
         elif pilihan == '3':
             tambah_stok(item_toko)
         elif pilihan == '4':
-            print("3")
+            edit_promo(item_toko)
         elif pilihan == '5':
-            print("3")
+            restore_item(item_toko)
         elif pilihan == '0':
             return False
         else:
@@ -128,18 +130,40 @@ def tambah_item(item_toko):
         "is_deleted": 0
     }
     print(f"Item {nama} berhasil ditambahkan dengan kode {kode_item_baru}.")
+    time.sleep(3)
     return item_toko
 
 
 def hapus_item(item_toko):
-    pass
+    print('Daftar Barang di Toko:')
+    toko = []
+    for index, (item_id, item_detail) in enumerate(item_toko.items()):
+        if not item_detail['is_deleted']:
+            toko.append([item_id, item_detail['name'],
+                        item_detail['category'], item_detail['price'], item_detail['stock']])
+    print(tabulate(toko, headers=[
+        'Kode Item', 'Nama', 'Kategori', 'Harga', 'Stok'], tablefmt='grid'))
+    id_hapus = input("Masukan ID barang yang akan dihapus: ")
+    if id_hapus in item_toko:
+        item_toko[id_hapus]['is_deleted'] = 1
+        print(f"Item {id_hapus} berhasil dihapus")
+        time.sleep(5)
+    else:
+        print(f"Item {item_id} tidak ditemukan.")
 
 
 def tambah_stok(item_toko):
     os.system('cls')
     print("Tambah Stok Item")
+    toko = []
+    for index, (item_id, item_detail) in enumerate(item_toko.items()):
+        if not item_detail['is_deleted']:
+            toko.append([item_id, item_detail['name'],
+                         item_detail['category'], item_detail['price'], item_detail['stock']])
+    print(tabulate(toko, headers=[
+        'Kode Item', 'Nama', 'Kategori', 'Harga', 'Stok'], tablefmt='grid'))
     kode_item = input(
-        "Masukkan Kode Item yang ingin ditambah stoknya (misal: item_003): ")
+        "\nMasukkan Kode Item yang ingin ditambah stoknya: ")
     if kode_item in item_toko:
         stok_baru = int(input("Masukkan jumlah stok yang ingin ditambahkan: "))
         item_toko[kode_item]['stock'] += stok_baru
@@ -149,12 +173,57 @@ def tambah_stok(item_toko):
     return item_toko
 
 
-def tambah_stok(item_toko):
-    pass
+def edit_promo(item_toko):
+    while True:
+        os.system("cls")
+        print('Daftar Barang Promo:')
+        promo = []
+        for index, (item_id, item_detail) in enumerate(item_toko.items()):
+            if item_detail['is_promo']:
+                promo.append([item_id, item_detail['name'],
+                              item_detail['category'], item_detail['price'], item_detail['stock']])
+        print(tabulate(promo, headers=[
+            'Kode Item', 'Nama', 'Kategori', 'Harga', 'Stok'], tablefmt='grid'))
+        print('Daftar Barang Non-Promo:')
+        non_promo = []
+        for index, (item_id, item_detail) in enumerate(item_toko.items()):
+            if not item_detail['is_promo']:
+                non_promo.append([item_id, item_detail['name'],
+                                  item_detail['category'], item_detail['price'], item_detail['stock']])
+        print(tabulate(non_promo, headers=[
+            'Kode Item', 'Nama', 'Kategori', 'Harga', 'Stok'], tablefmt='grid'))
+
+        ganti_promo = input(
+            "Masukan ID barang yang akan diganti promo:(Ketik 0 untuk kembali) ")
+
+        if ganti_promo == "0":
+            break
+        elif ganti_promo in item_toko:
+            item_toko[ganti_promo]['is_promo'] = 0 if item_toko[ganti_promo]['is_promo'] == 1 else 1
+            print(f"Promo pada Item {ganti_promo} berhasil diganti")
+            time.sleep(2)
+        else:
+            print(f"Item {item_id} tidak ditemukan. Masukan ID yang tepat")
 
 
-def restore_item():
-    pass
+def restore_item(item_toko):
+    print('Daftar Barang di Toko:')
+    toko = []
+    for index, (item_id, item_detail) in enumerate(item_toko.items()):
+        if item_detail['is_deleted']:
+            toko.append([item_id, item_detail['name'],
+                        item_detail['category'], item_detail['price'], item_detail['stock']])
+    print(tabulate(toko, headers=[
+        'Kode Item', 'Nama', 'Kategori', 'Harga', 'Stok'], tablefmt='grid'))
+    id_restore = input("Masukan ID barang yang akan direstore: ")
+    if id_restore in item_toko:
+        item_toko[id_restore]['is_deleted'] = 0
+        print(f"Item {id_restore} berhasil direstore")
+        time.sleep(5)
+    else:
+        print(f"Item {item_id} tidak ditemukan.")
+
+# Fungsi Daftar Member
 
 
 def lihat_member(members):
@@ -193,6 +262,7 @@ def lihat_member(members):
     #     else:
     #         print("Pilihan tidak valid, silakan coba lagi.")
     pass
+
 # Fungsi Recap Penjualan
 
 
@@ -229,8 +299,6 @@ def recap_penjualan(nota_transaksi):
 
         print(f"\nTotal Semua Nota: Rp {total_semua_nota}")
 
-        index = int(input(
-            "\nGunakan Angka 0 untuk kembali): "))
-        if index == 0:
-            fungsi_recap = False
-            continue
+        index = input("\nGunakan Angka 0 untuk kembali): ")
+        if index == "0":
+            break
