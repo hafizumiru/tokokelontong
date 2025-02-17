@@ -2,11 +2,11 @@
 import math
 import time
 import os
+from datetime import datetime
 from tabulate import tabulate
 
-from data_base import item_toko, members
+from data_base import item_toko, members, nota_transaksi
 
-dict = item_toko
 keranjang_belanja = {}
 
 
@@ -16,11 +16,11 @@ class Toko:
             os.system('cls')
             print('Daftar Barang di Toko:')
             toko = []
-            for index, (key, value) in enumerate(dict.items()):
+            for index, (item_id, item_detail) in enumerate(item_toko.items()):
                 harga = str(
-                    math.ceil(value['price'] * 0.9)) + " PROMO 10%!" if value.get('promo') == 1 else str(value['price'])
-                toko.append([index + 1, value['name'],
-                            value['category'], harga, value['stock']])
+                    math.ceil(item_detail['price'] * 0.9)) + " PROMO 10%!" if item_detail.get('promo') == 1 else str(item_detail['price'])
+                toko.append([index + 1, item_detail['name'],
+                            item_detail['category'], harga, item_detail['stock']])
             print(tabulate(toko, headers=[
                   'No', 'Nama', 'Kategori', 'Harga', 'Stok'], tablefmt='grid'))
 
@@ -39,18 +39,18 @@ class Toko:
             elif pilihan == '2':
                 belanja = True
                 while belanja:
-                    try:
-                        index = int(input(
-                            "\nMasukan Index Barang yang akan anda beli(Gunakan angka 0 untuk kembali): "))
-                        if index == 0:
-                            belanja = False
-                        else:
-                            jumlah = int(
-                                input("\nMasukkan banyak barang yang Anda inginkan: "))
-                            masukan_keranjang(index, jumlah)
-                    except:
-                        print(
-                            "Angka yang ada masukan tidak valid. Tolong masukan hanya angka")
+                    # try:
+                    index = int(input(
+                        "\nMasukan Index Barang yang akan anda beli(Gunakan angka 0 untuk kembali): "))
+                    if index == 0:
+                        belanja = False
+                    else:
+                        jumlah = int(
+                            input("\nMasukkan banyak barang yang Anda inginkan: "))
+                        masukan_keranjang(index, jumlah)
+                    # except:
+                    #     print(
+                    #         "Angka yang ada masukan tidak valid. Tolong masukan hanya angka")
 
             elif pilihan == '3':
                 print("Anda memilih Opsi 3.")
@@ -82,10 +82,10 @@ class Toko:
 
 def lihat_item_promo(dict):
     promo_items = []
-    for index, (key, value) in enumerate(dict.items()):
-        if value.get('promo') == 1:
-            promo_items.append([index + 1, value['name'],
-                                value['category'], value['price'], math.ceil(value['price'] * 0.9), value['stock']])
+    for index, item_detail in enumerate(dict.items()):
+        if item_detail.get('promo') == 1:
+            promo_items.append([index + 1, item_detail['name'],
+                                item_detail['category'], item_detail['price'], math.ceil(item_detail['price'] * 0.9), item_detail['stock']])
     if promo_items:
         print(tabulate(promo_items, headers=[
             'No', 'Nama', 'Kategori', 'Harga Sebelum Promo', 'Harga Sesudah Promo', 'Stok'], tablefmt='grid'))
@@ -110,31 +110,33 @@ def lihat_item_promo(dict):
 
 
 def masukan_keranjang(index, jumlah):
-    item_list = list(item_toko.values())
+    item_list = list(item_toko.items())
 
     if index < 0 or index >= len(item_list):
         print(f"Index {index} tidak valid.")
     else:
-        item = item_list[index-1]
+        item_id, item = item_list[index-1]
         if jumlah > item['stock']:
             print(
                 f"Stok tidak cukup untuk {item['name']}. Stok tersedia: {item['stock']}.")
         else:
-            item_name = item['name']
+
             harga = item['price'] * \
                 0.9 if item.get('promo') == 1 else item['price']
 
-            if item_name in keranjang_belanja:
-                keranjang_belanja[item_name]['jumlah'] += jumlah
+            # Tambahkan item ke keranjang menggunakan item_id sebagai key
+            if item_id in keranjang_belanja:
+                keranjang_belanja[item_id]['jumlah'] += jumlah
             else:
-                keranjang_belanja[item_name] = {
+                keranjang_belanja[item_id] = {
+                    "name": item['name'],
                     "price": harga,
                     "jumlah": jumlah
                 }
-            for key, value in item_toko.items():
-                if value['name'] == item_name:
-                    item_toko[key]['stock'] -= jumlah
-            print(f"{jumlah} {item_name} berhasil ditambahkan ke keranjang dengan harga {'promo' if item.get('promo') == 1 else 'normal'}: {harga}.")
+            item_toko[item_id]['stock'] -= jumlah
+            print(
+                f"{jumlah} {item['name']} berhasil ditambahkan ke keranjang dengan harga {'promo' if item.get('promo') == 1 else 'normal'}: {harga}.")
+
 
 # MENU 4
 
@@ -144,9 +146,9 @@ def lihat_keranjang():
         print("Keranjang belanja kosong.")
     else:
         keranjang = []
-        for index, (item_name, value) in enumerate(keranjang_belanja.items()):
-            keranjang.append([index + 1, item_name, value['price'],
-                             value['jumlah'], value['price'] * value['jumlah']])
+        for index, (item_id, item_detail) in enumerate(keranjang_belanja.items()):
+            keranjang.append([index+1, item_detail['name'], item_detail['price'],
+                             item_detail['jumlah'], item_detail['price'] * item_detail['jumlah']])
         print(tabulate(keranjang, headers=[
               'No', 'Nama Item', 'Harga per Unit', 'Jumlah', 'Total Harga'], tablefmt='grid'))
 
@@ -163,11 +165,11 @@ def lakukan_pembayaran():
     print("Keranjang Belanja Anda:")
     total_harga = 0
     keranjang = []
-    for index, (item_name, value) in enumerate(keranjang_belanja.items()):
-        total_item = value['price'] * value['jumlah']
+    for index, (item_id, item_detail) in enumerate(keranjang_belanja.items()):
+        total_item = item_detail['price'] * item_detail['jumlah']
         total_harga += int(total_item)
         keranjang.append(
-            [index + 1, item_name, value['price'], value['jumlah'], total_item])
+            [index + 1, item_detail['name'], item_detail['price'], item_detail['jumlah'], total_item])
 
     print(tabulate(keranjang, headers=[
           'No', 'Nama Item', 'Harga per Unit', 'Jumlah', 'Total Harga'], tablefmt='grid'))
@@ -175,79 +177,99 @@ def lakukan_pembayaran():
 
     loop_member = True
     while loop_member:
-        try:
-            member = int(input(
-                "Apakah anda seorang Member(Input 1 untuk Ya atau 0 untuk Tidak): "))
-            if member == 0:
-                harga_akhir(total_harga)
-            elif member == 1:
-                member_id = int(input("Masukkan ID Member Anda: "))
+        # try:
+        member = int(input(
+            "Apakah anda seorang Member(Input 1 untuk Ya atau 0 untuk Tidak): "))
+        if member == 0:
+            harga_akhir(total_harga, keranjang_belanja)
+            loop_member = False
+        elif member == 1:
+            member_id = int(input("Masukkan ID Member Anda: "))
 
-                if member_id in members:
-                    # Jika ID member valid, terapkan diskon berdasarkan member
-                    member_data = members[member_id]
+            if member_id in members:
+                # Jika ID member valid, terapkan diskon berdasarkan member
+                member_data = members[member_id]
 
-                    total_harga *= 0.95
-                    print(
-                        f"Selamat, {member_data['name']}! Anda mendapatkan diskon tambahan, Anda hanya perlu membayar sebesar {int(total_harga)}")
-                    harga_akhir(int(total_harga))
-                    loop_member = False
-                else:
-                    print("ID Member tidak valid. Kembali Ke pilihan sebelumnya.")
+                total_harga *= 0.95
 
-            else:
                 print(
-                    "Angka yang ada masukan tidak valid. Masukan hanya 0 dan 1")
-        except:
+                    f"Selamat, {member_data['name']}! Anda mendapatkan diskon tambahan, Anda hanya perlu membayar sebesar {int(total_harga)}")
+                harga_akhir(int(total_harga), keranjang_belanja)
+                loop_member = False
+            else:
+                print("ID Member tidak valid. Kembali Ke pilihan sebelumnya.")
+
+        else:
             print(
-                "Tolong masukan hanya angka")
+                "Angka yang ada masukan tidak valid. Masukan hanya 0 dan 1")
+        # except:
+        #     print(
+        #         "Tolong masukan hanya angka")
 
 # Melakukan pembayaran
 
 
-def harga_akhir(total_harga):
+def harga_akhir(total_harga, keranjang_belanja):
     loop_harga = True
-    total_harga = math.ceil(total_harga)
+    total_harga = int(math.ceil(total_harga / 100) * 100)
     while loop_harga:
-        try:
-            # Input jumlah uang dalam kelipatan 100000 atau 50000
-            jumlah_100k = int(input("Masukkan jumlah lembar uang Rp100000: "))
-            jumlah_50k = int(input("Masukkan jumlah lembar uang Rp50000: "))
+        # try:
+        # Input jumlah uang dalam kelipatan 100000 atau 50000
+        jumlah_100k = int(input("Masukkan jumlah lembar uang Rp100000: "))
+        jumlah_50k = int(input("Masukkan jumlah lembar uang Rp50000: "))
 
-            # Hitung total uang yang dibayarkan
-            total_uang = (jumlah_100k * 100000) + (jumlah_50k * 50000)
+        # Hitung total uang yang dibayarkan
+        total_uang = (jumlah_100k * 100000) + (jumlah_50k * 50000)
 
-            if total_uang >= total_harga:
-                kembalian = total_uang - total_harga
-                print(
-                    f"\nPembayaran berhasil. Total uang dibayarkan: Rp {total_uang:.2f}")
-                print(f"Kembalian Anda: Rp {kembalian:.2f}")
+        if total_uang >= total_harga:
+            kembalian = total_uang - total_harga
+            print(
+                f"\nPembayaran berhasil. Total uang dibayarkan: Rp {total_uang:,}")
+            print(f"Kembalian Anda: Rp {kembalian:,}")
 
-                # Menghitung pecahan uang untuk kembalian
-                pecahan_kembalian = hitung_pecahan_uang(kembalian)
+            # Menghitung pecahan uang untuk kembalian
+            pecahan_kembalian = hitung_pecahan_uang(kembalian)
 
-                # Tampilkan pecahan kembalian
-                if kembalian > 0:
-                    print("\nKembalian Anda dengan pecahan:")
-                    for pecahan, jumlah in pecahan_kembalian.items():
-                        print(f"{jumlah} x Rp {pecahan}")
-                else:
-                    print("Tidak ada kembalian.")
-
-                # Kurangi stok setiap item yang ada di keranjang belanja
-                for item_id, jumlah_beli in keranjang_belanja.items():
-                    kurangi_stok(item_id, jumlah_beli)
-
-                # Kosongkan keranjang belanja dan kembali ke menu utama
-                keranjang_belanja.clear()
-                time.sleep(20)
-                loop_harga = False
+            # Tampilkan pecahan kembalian
+            if kembalian > 0:
+                print("\nKembalian Anda dengan pecahan:")
+                for pecahan, jumlah in pecahan_kembalian.items():
+                    print(f"{jumlah} x Rp {pecahan:,}")
             else:
-                kekurangan = total_harga - total_uang
-                print(
-                    f"Uang yang Anda masukkan kurang Rp {kekurangan:.2f}. Silakan masukkan jumlah yang tepat.")
-        except:
-            print("Input tidak valid. Masukkan hanya angka yang sesuai.")
+                print("Tidak ada kembalian.")
+
+            # Kurangi stok setiap item yang ada di keranjang belanja
+            for item_id, item_detail in keranjang_belanja.items():
+                kurangi_stok(item_id, item_detail['jumlah'])
+
+            # Buat nota belanja
+            nota_belanja = {
+                "waktu": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "total_harga": total_harga,
+                "item_dibeli": {item_id: {  # Menggunakan item_id sebagai key
+                    "name": item_toko[item_id]["name"],  # Nama item
+                    "jumlah": item_detail["jumlah"],  # Jumlah item yang dibeli
+                    "harga": item_toko[item_id]["price"]  # Harga per item
+                    # Iterasi melalui keranjang belanja
+                } for item_id, item_detail in keranjang_belanja.items()}
+            }
+
+            # Simpan nota ke catatan transaksi
+            nota_transaksi[nota_belanja["waktu"]] = nota_belanja
+            print("\nNota belanja:", nota_belanja)
+
+            # Kosongkan keranjang belanja
+            keranjang_belanja.clear()
+
+            # Tunggu sebentar dan keluar dari loop
+            time.sleep(5)
+            loop_harga = False
+        else:
+            kekurangan = total_harga - total_uang
+            print(
+                f"Uang yang Anda masukkan kurang Rp {kekurangan:,}. Silakan masukkan jumlah yang tepat.")
+        # except ValueError:
+        #     print("Input tidak valid. Masukkan hanya angka yang sesuai.")
 
 
 def hitung_pecahan_uang(kembalian):
