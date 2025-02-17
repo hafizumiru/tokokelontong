@@ -19,7 +19,7 @@ def main():
         pilihan = input("\nMasukkan pilihan Anda: ")
 
         if pilihan == '1':
-            karyawan.menu_karyawan()
+            karyawan.login()
         elif pilihan == '2':
             toko.menu_toko()
         elif pilihan == '0':

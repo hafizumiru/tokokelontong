@@ -140,6 +140,10 @@ item_toko = {
         "promo": 0
     }
 }
+karyawan = [
+    {"username": "karyawan1", "password": "password123"},
+    {"username": "karyawan2", "password": "password456"},
+]
 
 members = {
     1001: {'name': 'John Doe'},
@@ -147,4 +151,19 @@ members = {
     1003: {'name': 'Alice Brown'}
 }
 
-nota_transaksi = {}
+nota_transaksi = {
+    # "2025-02-17 10:00:00": {
+    #     "total_harga": 30000,
+    #     "item_dibeli": {
+    #         1: {"name": "Item A", "jumlah": 2, "harga": 5000},
+    #         2: {"name": "Item B", "jumlah": 1, "harga": 20000}
+    #     }
+    # },
+    # "2025-02-17 12:00:00": {
+    #     "total_harga": 45000,
+    #     "item_dibeli": {
+    #         1: {"name": "Item A", "jumlah": 3, "harga": 5000},
+    #         3: {"name": "Item C", "jumlah": 1, "harga": 30000}
+    #     }
+    # }
+}

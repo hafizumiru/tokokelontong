@@ -256,7 +256,6 @@ def harga_akhir(total_harga, keranjang_belanja):
 
             # Simpan nota ke catatan transaksi
             nota_transaksi[nota_belanja["waktu"]] = nota_belanja
-            print("\nNota belanja:", nota_belanja)
 
             # Kosongkan keranjang belanja
             keranjang_belanja.clear()
